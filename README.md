@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Streaming Chat
+
+Real-time streaming chat interface with an LLM, built with Next.js and Vercel AI SDK.
+
+## Features
+
+- Token-by-token streaming responses (like ChatGPT)
+- Stop generation mid-response
+- Copy AI responses to clipboard
+- Auto-scrolling message list
+- Typing indicator while AI is thinking
+- Mobile-responsive layout
+- Dark mode (system preference)
+- Accessible (WCAG 2.2 AA)
+
+## Architecture
+
+```
+src/
+  app/
+    api/chat/route.ts    # POST — streamText() with Google Gemini
+    layout.tsx            # Root layout, fonts, metadata
+    page.tsx              # Chat page
+  components/             # UI components (ChatContainer, MessageList, etc.)
+  hooks/                  # useCopyToClipboard, useAutoScroll
+  lib/ai.ts              # AI provider config (swap model in one line)
+  services/prompts/       # System prompt as typed constant
+```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| AI | Vercel AI SDK + Google Gemini (free tier) |
+| Styling | Tailwind CSS v4 |
+| Testing | Vitest + React Testing Library |
+| E2E | Playwright |
+| Language | TypeScript (strict mode) |
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repo and install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env.local` from the example:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Get a free Google Gemini API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and add it to `.env.local`.
+
+4. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run lint` | ESLint |
+| `npm run format` | Prettier |
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Yes | Google Gemini API key |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Switching AI Provider
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The AI provider is configured in `src/lib/ai.ts`. To switch to OpenAI or Anthropic:
 
-## Deploy on Vercel
+```ts
+// Google Gemini (default)
+import { google } from '@ai-sdk/google';
+export const chatModel = google('gemini-2.5-flash-preview-05-20');
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+// OpenAI
+import { openai } from '@ai-sdk/openai';
+export const chatModel = openai('gpt-4o');
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+// Anthropic
+import { anthropic } from '@ai-sdk/anthropic';
+export const chatModel = anthropic('claude-sonnet-4-20250514');
+```
+
+Install the corresponding provider package (`@ai-sdk/openai` or `@ai-sdk/anthropic`) and set the matching env var.
