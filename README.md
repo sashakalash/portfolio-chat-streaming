@@ -1,7 +1,7 @@
 # AI Streaming Chat
 
 Real-time streaming chat interface with an LLM, built with Next.js and Vercel AI SDK.
-
+https://portfolio-chat-streaming.vercel.app/
 ## Features
 
 - Token-by-token streaming responses (like ChatGPT)
